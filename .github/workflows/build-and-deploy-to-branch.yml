@@ -64,9 +64,8 @@ jobs:
         mv .next BUILD/.next
 
     # Synchronize & push BUILD directory to deployment branch
-    - name: Deploy to git branch
+    - name: Configure Git informations
       run: |
-        # Configure Git informations
         git config --global user.name $GITHUB_ACTOR
         git config --global user.email $GITHUB_ACTOR@users.noreply.github.com
         
@@ -74,7 +73,8 @@ jobs:
         export DEPLOY_BRANCH=$GIT_BRANCH-$DEPLOY_BRANCH_POSTFIX
         export GIT_COMMIT=$(git rev-parse --short HEAD)
 
-        # Synchronize deployment branch
+    - name: Synchronize deployment branch
+      run: |
         mkdir RELEASE
         mv .git RELEASE/.git
         cd RELEASE
@@ -82,9 +82,10 @@ jobs:
         (git pull --depth 1 origin $DEPLOY_BRANCH --rebase --allow-unrelated-histories) || (echo "Deployment branch synced")
         cd ..
 
-        # Push build into the deployment branch
+    - name: Push build into the deployment branch
+      run: |
         mv RELEASE/.git BUILD/.git
-        cd RELEASE
+        cd BUILD
         git add -A
         git commit -m "Automated build $GIT_COMMIT"
         git push origin $DEPLOY_BRANCH
