@@ -10,7 +10,7 @@ Check the complete workflow here ([build-and-deploy-to-branch.yml](.github/workf
 
 ## Actions used
 - **[actions/checkout@v2](https://github.com/actions/checkout)** To checkout the source code from the repository
-- **[actions/cache@v2](https://github.com/actions/cache)** To cachr the dependencies, allow us to re use them for future builds
+- **[actions/cache@v2](https://github.com/actions/cache)** To cache the dependencies, allow us to re use them for future builds
 
 (Also **[actions/setup-node@v2](https://github.com/actions/setup-node)** for setup nodejs, although it's not required)
 
