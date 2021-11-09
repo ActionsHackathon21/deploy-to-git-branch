@@ -70,10 +70,11 @@ jobs:
         git config --global user.email $GITHUB_ACTOR@users.noreply.github.com
         
 
-    - name: Synchronize deployment branch
+    - name: Synchronize & push into deployment branch
       run: |
         GIT_BRANCH=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
         DEPLOY_BRANCH=$GIT_BRANCH-$DEPLOY_BRANCH_POSTFIX
+        GIT_COMMIT=$(git rev-parse --short HEAD)
 
         mkdir RELEASE
         mv .git RELEASE/.git
@@ -84,11 +85,7 @@ jobs:
         mv ./.git ../.git
         cd ..
 
-    - name: Push build into the deployment branch
-      run: |
-        GIT_COMMIT=$(git rev-parse --short HEAD)
-        DEPLOY_BRANCH=$GIT_BRANCH-$DEPLOY_BRANCH_POSTFIX
-
+        # Push build into the deployment branch
         echo "Pushing build $GIT_COMMIT to $DEPLOY_BRANCH"
         mv .git BUILD/.git
         cd BUILD
