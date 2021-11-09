@@ -78,6 +78,7 @@ jobs:
         mkdir RELEASE
         mv .git RELEASE/.git
         cd RELEASE
+        echo "Checkout $DEPLOY_BRANCH"
         (git checkout $DEPLOY_BRANCH) || (git checkout -b $DEPLOY_BRANCH)
         (git pull --depth 1 origin $DEPLOY_BRANCH --rebase --allow-unrelated-histories) || (echo "Deployment branch synced")
         git status
