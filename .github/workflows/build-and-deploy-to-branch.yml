@@ -1,0 +1,80 @@
+name: Build & Deploy to branch
+
+env:
+  DEPLOY_BRANCH_POSTFIX: deploy # Configure the destination branch postfix (code on "main" branch will be built and pushed into "main-POSTFIX" branch)
+
+on:
+  push:
+    branches: [ main ] # Configure the branchs which you want to run this workflow
+    
+jobs:
+  build-push:
+    name: "Build & Push"
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [lts/*]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: Install yarn
+      run: npm install -g yarn
+      
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: |
+          ./node_modules
+          ./.yarn
+        key: ${{ runner.os }}-modules-${{ hashFiles('./yarn.lock') }}
+        
+    - name: Install build dependencies
+      run: |
+        yarn install --prefer-offline --pure-lockfile --cache-folder .yarn --modules-folder node_modules
+
+    - name: Test 
+      run: |
+        yarn test
+
+    - name: Build application
+      run: |
+        yarn build
+
+        mkdir BUILD
+        cp -r public BUILD/public
+        cp -r package.json BUILD/package.json
+        cp -r yarn.lock BUILD/yarn.lock
+        mv .next BUILD/.next
+
+    - name: Deploy to git branch
+      run: |
+        git config --global user.name $GITHUB_ACTOR
+        git config --global user.email $GITHUB_ACTOR@users.noreply.github.com
+        
+        export GIT_BRANCH=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
+        export DEPLOY_BRANCH=$GIT_BRANCH-$DEPLOY_BRANCH_POSTFIX
+        export GIT_COMMIT=$(git rev-parse --short HEAD)
+
+
+        mkdir RELEASE
+        mv .git RELEASE/.git
+        cd RELEASE
+        git checkout $DEPLOY_BRANCH
+        git pull --depth 1 origin $DEPLOY_BRANCH --rebase --allow-unrelated-histories
+        cd ..
+
+        mv RELEASE/.git BUILD/.git
+        cd RELEASE
+        git add -A
+        git commit -m "Automated build $GIT_COMMIT"
+        git push origin $DEPLOY_BRANCH
+        
