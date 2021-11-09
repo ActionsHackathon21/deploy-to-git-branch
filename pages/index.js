@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { useState, useEffect } from 'react'
 
@@ -16,7 +15,7 @@ const Page = () => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Sample App</title>
+        <title>Hello world</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -27,7 +26,7 @@ const Page = () => {
       </main>
 
       <footer className={styles.footer}>
-        &copy; Martin Pham
+        &copy; <a href="https://mph.am">Martin Pham</a>
       </footer>
     </div>
   )
