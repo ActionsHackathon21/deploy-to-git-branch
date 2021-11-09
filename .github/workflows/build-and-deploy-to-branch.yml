@@ -87,7 +87,8 @@ jobs:
     - name: Push build into the deployment branch
       run: |
         GIT_COMMIT=$(git rev-parse --short HEAD)
-
+        DEPLOY_BRANCH=$GIT_BRANCH-$DEPLOY_BRANCH_POSTFIX
+        
         echo "Pushing build $GIT_COMMIT"
         mv .git BUILD/.git
         cd BUILD
