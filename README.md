@@ -9,8 +9,8 @@ Use GitHub Actions and Workflows to build and deploy your applications to a bran
 Check the complete workflow here ([build-and-deploy-to-branch.yml](.github/workflows/build-and-deploy-to-branch.yml))
 
 ## Actions used
-- **[actions/checkout@v2](https://github.com/actions/checkout)** To checkout source code from the repository
-- **[actions/cache@v2](https://github.com/actions/cache)** To check dependencies, allow us to re use them for future builds
+- **[actions/checkout@v2](https://github.com/actions/checkout)** To checkout the source code from the repository
+- **[actions/cache@v2](https://github.com/actions/cache)** To cachr the dependencies, allow us to re use them for future builds
 
 (Also **[actions/setup-node@v2](https://github.com/actions/setup-node)** for setup nodejs, although it's not required)
 
