@@ -93,6 +93,6 @@ jobs:
         cd BUILD
         git add -A
         git commit -m "Automated build $GIT_COMMIT"
-        ls -la
+        git push origin $DEPLOY_BRANCH
         cd ..
         
