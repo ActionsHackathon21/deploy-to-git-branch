@@ -4,7 +4,7 @@ This project follows the DEV.to [#ActionsHackathon21](https://dev.to/devteam/joi
 
 Use GitHub Actions and Workflows to build and deploy your applications to a branch. So you can just pull this branch to deploy on the production server, without building.
 
-![Screenshot](./screenshot.png)
+![Screenshot](/screenshot.png)
 
 Check the complete workflow here ([build-and-deploy-to-branch.yml](.github/workflows/build-and-deploy-to-branch.yml))
 
