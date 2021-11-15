@@ -80,9 +80,9 @@ jobs:
         mv .git RELEASE/.git
         cd RELEASE
         echo "Checking out $DEPLOY_BRANCH"
-        (git checkout -b $DEPLOY_BRANCH) || (git checkout $DEPLOY_BRANCH)
+        git checkout -b $DEPLOY_BRANCH
         git stash && git stash drop
-        (git pull --depth 1 origin $DEPLOY_BRANCH --rebase --allow-unrelated-histories) || (echo "Deployment branch synced")
+        (git pull --depth 1 origin $DEPLOY_BRANCH --rebase -X theirs --allow-unrelated-histories) || (echo "Deployment branch synced")
         mv ./.git ../.git
         cd ..
 
