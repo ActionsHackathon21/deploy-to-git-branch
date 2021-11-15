@@ -1,8 +1,8 @@
 Deploy application to GIT branch 
 ===
-This project follows the DEV.to [#ActionsHackathon21](https://dev.to/devteam/join-us-for-the-2021-github-actions-hackathon-on-dev-4hn4) hackathon.
+*This project follows the DEV.to [#ActionsHackathon21](https://dev.to/devteam/join-us-for-the-2021-github-actions-hackathon-on-dev-4hn4) hackathon.*
 
-Use GitHub Actions and Workflows to build and deploy your applications to a branch. So you can just pull this branch to deploy on the production server, without building.
+Use GitHub Actions and Workflows to build and deploy your applications to a branch. So you can just pull this branch to deploy on the production server, without building. You can also use it to deploy to Github Pages, by selecting the destination branch as the Github Pages's branch.
 
 ![Screenshot](https://github.com/ActionsHackathon21/deploy-to-git-branch/raw/main/screenshot.png)
 
