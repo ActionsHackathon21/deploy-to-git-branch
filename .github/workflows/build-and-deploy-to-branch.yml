@@ -1,0 +1,97 @@
+name: Build & Deploy to branch
+
+env:
+  DEPLOY_BRANCH_POSTFIX: deploy # Configure the destination branch postfix (code on "main" branch will be built and pushed into "main-POSTFIX" branch)
+
+on:
+  push:
+    branches: [ main ] # Configure the branchs which you want to run this workflow
+    
+jobs:
+  build-push:
+    name: "Build & Push"
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [lts/*] # Configure nodejs version
+
+    steps:
+
+    # Checkout source code
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    # Setup Nodejs
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    # Setup yarn
+    - name: Install yarn
+      run: npm install -g yarn
+      
+    # Cache dependencies for faster build time in future
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: |
+          ./node_modules
+          ./.yarn
+        key: ${{ runner.os }}-modules-${{ hashFiles('./yarn.lock') }}
+        
+    # Install dependencies for build process
+    - name: Install build dependencies
+      run: |
+        yarn install --prefer-offline --pure-lockfile --cache-folder .yarn --modules-folder node_modules
+
+    # Test 
+    - name: Test 
+      run: |
+        yarn test
+
+    # Build application into BUILD directory
+    - name: Build application
+      run: |
+        yarn build
+
+        mkdir BUILD
+        cp -r public BUILD/public
+        cp -r package.json BUILD/package.json
+        cp -r yarn.lock BUILD/yarn.lock
+        mv .next BUILD/.next
+
+    # Synchronize & push BUILD directory to deployment branch
+    - name: Configure Git informations
+      run: |
+        git config --global user.name $GITHUB_ACTOR
+        git config --global user.email $GITHUB_ACTOR@users.noreply.github.com
+        
+
+    - name: Synchronize & push into deployment branch
+      run: |
+        GIT_BRANCH=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
+        DEPLOY_BRANCH=$GIT_BRANCH-$DEPLOY_BRANCH_POSTFIX
+        GIT_COMMIT=$(git rev-parse --short HEAD)
+
+        mkdir RELEASE
+        mv .git RELEASE/.git
+        cd RELEASE
+        echo "Checking out $DEPLOY_BRANCH"
+        git checkout -b $DEPLOY_BRANCH
+        git stash && git stash drop
+        (git pull --depth 1 origin $DEPLOY_BRANCH --rebase -X theirs --allow-unrelated-histories) || (echo "Deployment branch synced")
+        mv ./.git ../.git
+        cd ..
+
+        # Push build into the deployment branch
+        echo "Pushing build $GIT_COMMIT to $DEPLOY_BRANCH"
+        mv .git BUILD/.git
+        cd BUILD
+        git add -A
+        git commit -m "Automated build $GIT_COMMIT"
+        git push origin $DEPLOY_BRANCH
+        cd ..
+        
